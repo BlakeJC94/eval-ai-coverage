@@ -10,7 +10,7 @@ def plot_results(
     coverage_labels,
     dropout_labels,
     start_time_key,
-) -> plt.Figure, plt.Axes:
+) -> Tuple[plt.Figure, plt.Axes]:
     """Plot results.
 
     Args:
@@ -111,8 +111,8 @@ def plot_labels(
 
 
 def get_ax_labels(
-    labels: List[Tuple[Path, float, float]],
-) -> List[Tuple[str, float, float]]:
+    labels: List[Tuple[Path, float,
+                       float]], ) -> List[Tuple[str, float, float]]:
     """Get labels from a list of tuples.
 
     Args:
