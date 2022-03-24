@@ -16,7 +16,7 @@ from eval_ai_coverage import (
 )
 
 OPTS = {
-    'data_dir': ['./edf', './edf_sample'],
+    # 'data_dir': ['./edf', './edf_sample'],
     'patient_id': ['1110', '1869', '1876', '1904', '1965', '2002'],
     'data_type': ['ACC', 'BVP', 'EDA', 'HR', 'TEMP', None],
     'start_time_key': ['time_edf', 'time_fp'],
@@ -84,7 +84,7 @@ def main(
     duplicate_filepaths = get_duplicates(filepaths)
 
     print("Calulating file statistics from data...")
-    all_stats, coverage_labels, dropout_labels = compute_stats(
+    all_stats, all_coverage, all_dropouts = compute_stats(
         filepaths,
         apply_edf_tz=True,
         dropouts_and_data_stats=dropouts_and_data_stats,
@@ -92,14 +92,22 @@ def main(
         min_dropout=min_dropout,
     )
     filestats = pd.DataFrame.from_dict(all_stats)
-    filestats = filestats.set_index('filepath').sort_index()
+    coverage = pd.DataFrame.from_dict(all_coverage)
+    dropouts = pd.DataFrame.from_dict(all_dropouts)
+
 
     print("Plotting results...")
-    fig, ax = plot_results(
-        coverage_labels,
-        dropout_labels,
-        start_time_key=start_time_key,
+    _fig, ax = plot_results(
+        coverage,
+        dropouts,
+        figsize=(18, 8),
     )
+
+    if start_time_key == 'time_edf':
+        ax.set_ylabel('Hours since 00:00 of date from EDF file')
+    elif start_time_key == 'time_fp':
+        ax.set_ylabel('Hours since 00:00 of date from directory')
+
     title_str = f'Coverage of {data_type.lower()} files for patient {patient_id}'
     if dropouts_and_data_stats:
         title_str += f', min dropout = {min_dropout/128} sec'
@@ -114,8 +122,8 @@ def main(
         'filepaths': filepaths,
         'dodgy_filepaths': dodgy_filepaths,
         'duplicate_filepaths': duplicate_filepaths,
-        'coverage_labels': coverage_labels,
-        'dropout_labels': dropout_labels,
+        'coverage': coverage,
+        'dropouts': dropouts,
     }
     plot_filepath = Path(PLOT_DIR) / Path(output_filename + '.png')
     results_filepath = Path(RESULTS_DIR) / Path(output_filename + '.pkl')
@@ -132,5 +140,6 @@ def main(
 
 
 if __name__ == '__main__':
-    results = main(data_dir='./edf_sample')  # Test
+    results = main(data_dir='./edf')  # Test
+    # results = main(data_dir='/home/blake/Workspace/scratch/evalai/edf_sample')  # Test
     plt.show()
