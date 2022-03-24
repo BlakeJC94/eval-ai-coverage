@@ -48,7 +48,7 @@ def get_edf_filepaths(
 
 
 def filter_dodgy_files(
-    filepaths: List[Path],
+    all_filepaths: List[Path],
 ) -> Tuple[List[Path], Dict[Path, str]]:
     """Filters filepaths to only contain paths with EDF files that are not dodgy.
 
@@ -68,7 +68,7 @@ def filter_dodgy_files(
 
     with warnings.catch_warnings():
         warnings.simplefilter('error')
-        for filepath in filepaths:
+        for filepath in all_filepaths:
             try:
                 file = mne.io.read_raw_edf(str(filepath))
                 if file.n_times == 0:
@@ -80,9 +80,9 @@ def filter_dodgy_files(
             except Exception as e:
                 print(f"  {filepath} is dodgy: {e}")
                 dodgy_filepaths[filepath] = str(e)
-                filepaths.remove(filepath)
 
     mne.set_log_level(old_log_level)
+    filepaths = [fp for fp in all_filepaths if fp not in dodgy_filepaths]
     return filepaths, dodgy_filepaths
 
 

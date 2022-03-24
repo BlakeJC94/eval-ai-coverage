@@ -58,8 +58,11 @@ def compute_stats(
                                         microsecond=0)
         # zero_point = datetime.combine(start_time.date(), datetime.min.time())
         file_start = (start_time - zero_point).total_seconds()
-        ax_index = (int(filepath.parent.stem) -
-                    datetime(2018, 1, 1).timestamp()) // (60 * 60 * 24)
+        # ax_index = (int(filepath.parent.stem) -
+        #             datetime(2018, 1, 1).timestamp()) // (60 * 60 * 24)
+        # ax_index = (datetime.fromtimestamp(int(filepath.parent.stem)) - datetime(2018, 1,
+        #                                                                          1)).total_seconds()
+        ax_index = int(filepath.parent.stem) / (60 * 60 * 24)
 
         # Compute coverage label
         coverage = {

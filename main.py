@@ -140,6 +140,7 @@ def main(
 
 
 if __name__ == '__main__':
-    results = main(data_dir='./edf')  # Test
+    results = main(data_dir='./edf', patient_id='1876', data_type='TEMP')  # Test
+    # results = main(data_dir='./edf')  # Test
     # results = main(data_dir='/home/blake/Workspace/scratch/evalai/edf_sample')  # Test
     plt.show()

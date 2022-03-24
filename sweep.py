@@ -5,8 +5,9 @@ from main import main
 DATA_DIR = './edf'
 START_TIME_KEY = 'time_edf'
 
-PATIENT_IDS = ['1110', '1869'] #, '1876', '1904', '1965', '2002']
-DATA_TYPES = ['ACC', 'BVP'] #, 'EDA', 'HR', 'TEMP']
+# PATIENT_IDS = ['1110']#, '1869'] #, '1876', '1904', '1965', '2002']
+PATIENT_IDS = ['1869', '1876', '1904'] #, '1965', '2002']
+DATA_TYPES = ['ACC', 'BVP', 'EDA', 'HR', 'TEMP']
 
 if __name__ == '__main__':
 
@@ -17,7 +18,7 @@ if __name__ == '__main__':
             patient_id=pid,
             data_type=dtype,
             start_time_key=START_TIME_KEY,
+            dropouts_and_data_stats=True,
             min_dropout=128 * 60,
-            compute_dropouts=True,
         )
 
