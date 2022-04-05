@@ -83,6 +83,6 @@ if __name__ == '__main__':
     all_results = []
     for pid, dtype in product(PATIENT_IDS, DATA_TYPES):
         print(f'-------- Processing patient {pid} ({dtype})')
-        results = main(data_dir=DATA_DIR, patient_id=PATIENT_ID, data_type=DATA_TYPE)
+        results = main(data_dir=DATA_DIR, patient_id=pid, data_type=dtype)
         all_results.append(results)
 
