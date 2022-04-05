@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 DAY_IN_HR = 24
 
 
-def plot_results(
+def plot_coverage_bars(
     coverage: pd.DataFrame,
     dropouts: pd.DataFrame,
     figsize: Tuple[float, float] = (18, 8)
@@ -26,13 +26,16 @@ def plot_results(
     fig, ax = plt.subplots(figsize=figsize)
     width = 0.95  # the width of the bars: can also be len(x) sequence
 
+    # Create x-axis index for each bar
+    coverage = add_coverage_bar_keys(coverage)
+    dropouts = add_coverage_bar_keys(dropouts)
+
     # get bounds of plot
     all_bars = pd.concat([coverage, dropouts]).sort_values(by=['ax_index'])
-    # minimum_space = all_bars['ax_index'].sort_values().diff().min()
 
     start_index = all_bars['ax_index'].min()
     end_index = all_bars['ax_index'].max()
-    max_val = all_bars[['start_time', 'duration']].sum(axis=1).max()
+    max_val = all_bars[['label_start', 'label_duration']].sum(axis=1).max()
 
     x_lim = (start_index - 1.1 * width / 2, end_index + 1.1 * width / 2)
     y_lim = (0, max(2.5 * 24, 1.1 * max_val / (60 * 60)))
@@ -69,8 +72,6 @@ def plot_results(
     ax.tick_params(axis='x', labelrotation=-90)
     ax.set_xlabel('Data directory timestamp')
 
-    # fig.set_size_inches(figsize[0], figsize[1]/minimum_space)
-
     ax.legend()
     ax.set_xlim(x_lim)
     ax.set_ylim(y_lim)
@@ -101,8 +102,8 @@ def plot_bars(
     labels = labels.sort_values(by=['ax_index'])
 
     ax_index = labels['ax_index']
-    offset = labels['start_time']  # start time (seconds)
-    duration = labels['duration']  # duration (seconds)
+    offset = labels['label_start']  # start time (seconds)
+    duration = labels['label_duration']  # duration (seconds)
 
     sec_in_hr = 3600
 
@@ -116,3 +117,25 @@ def plot_bars(
         alpha=alpha,
     )
     return ax
+
+
+def add_coverage_bar_keys(labels: pd.DataFrame) -> pd.DataFrame:
+    """Adds `ax_index` and `file_start` to the dataframe.
+
+    Args:
+        labels: Dataframe with labels.
+
+    Returns:
+        Dataframe with `ax_index` and `file_start` added.
+    """
+    if len(labels) == 0:
+        return labels
+
+    start_time = labels['time_edf'].dt.tz_localize(None)
+    zero_point = start_time.dt.normalize()
+    file_start = (start_time - zero_point).dt.total_seconds()
+
+    labels['start_time'] = file_start + labels['label_start']
+    labels['ax_index'] = labels['filepath'].apply(lambda fp: int(fp.parent.stem)/(60*60*24))
+    return labels
+

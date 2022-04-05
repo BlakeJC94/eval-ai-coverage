@@ -1,19 +1,17 @@
+from itertools import product
 from pathlib import Path
 
 import pandas as pd
 import matplotlib.pyplot as plt
 
 from eval_ai_coverage import (
-    plot_results,
+    plot_coverage_bars,
     load_results,
-    OPTS,
     PLOT_DIR,
-    RESULTS_DIR,
     SPLIT,
 )
 
-
-def plot_outputs(
+def main(
     patient_id='2002',
     data_type='BVP',
 ):
@@ -22,22 +20,18 @@ def plot_outputs(
 
     coverage = results['coverage']
     dropouts = results['dropouts']
-    start_time_key = results['start_time_key']
     min_dropout = results['min_dropout']
     output_filename = results['output_filename']
     coverage = results['coverage']
 
     print("Plotting results...")
-    _fig, ax = plot_results(
+    _fig, ax = plot_coverage_bars(
         coverage,
         dropouts,
         figsize=(36, 8),
     )
 
-    if start_time_key == 'time_edf':
-        ax.set_ylabel('Hours since 00:00 of date from EDF file')
-    elif start_time_key == 'time_fp':
-        ax.set_ylabel('Hours since 00:00 of date from directory')
+    ax.set_ylabel('Hours since 00:00 of date from EDF file')
 
     title_str = f'Coverage of {data_type.lower()} files for patient {patient_id}'
     if min_dropout >= 0:
@@ -56,5 +50,15 @@ def plot_outputs(
 
 
 if __name__ == '__main__':
-    plot_outputs()
-    plt.show()
+
+    # TEST
+    PATIENT_IDS = ['2002']
+    DATA_TYPES = ['BVP']
+
+    # PATIENT_IDS = ['1110', '1869', '1876', '1904', '1965', '2002']
+    # DATA_TYPES = ['ACC', 'BVP', 'EDA', 'HR', 'TEMP']
+
+    for pid, dtype in product(PATIENT_IDS, DATA_TYPES):
+        print(f'-------- Processing patient {pid} ({dtype})')
+        main(patient_id=pid, data_type=dtype)
+        plt.show()
