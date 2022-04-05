@@ -31,14 +31,19 @@ Expected file structure in `path-to-eval-al-data`:
       ...
 ```
 
-Set parameters in `sweep.py` and then run
-
+Install the package
 ```bash
-$ python3 sweep.py
+$ pip install .
 ```
 
-To run a test with sample data, simply run `main.py`,
-
+To scan through data and save statistics, edit the parameters in
+`./scripts/generate_file_stats_results.py` and run
 ```bash
-$ python3 main.py
+$ python3 scripts/generate_file_stats_results.py
 ```
+
+After generating stats, generate a coverage bar plot using
+```bash
+$ python3 scripts/plot_coverage_bars.py
+```
+
