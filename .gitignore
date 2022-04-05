@@ -1,5 +1,6 @@
 lightning_logs
 
+**/*.bak
 test_results
 /seeralgo/**/*.hdf
 *.pkl
