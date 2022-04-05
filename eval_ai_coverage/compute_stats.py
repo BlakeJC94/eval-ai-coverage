@@ -13,7 +13,6 @@ from tqdm import tqdm
 def compute_stats(
     filepaths,
     apply_edf_tz=False,
-    dropouts_and_data_stats=True,
     start_time_key='time_edf',
     min_dropout=128 * 10,
 ):
@@ -34,7 +33,7 @@ def compute_stats(
     _log_level = mne.set_log_level(False)
     all_stats, all_coverage, all_dropouts = [], [], []
 
-    if dropouts_and_data_stats:
+    if min_dropout >= 0:
         print("Computing data stats as well, this will take longer to process")
 
     for filepath in tqdm(filepaths):
@@ -72,7 +71,7 @@ def compute_stats(
             'duration': stats['duration'],
         }
 
-        if dropouts_and_data_stats:
+        if min_dropout >= 0:
             data, times = file.get_data(), file.times
             stats = {**stats, **get_data_stats(data)}
             stats['range'] = stats['max'] - stats['min']

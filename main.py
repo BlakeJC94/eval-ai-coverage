@@ -13,17 +13,11 @@ from eval_ai_coverage import (
     filter_dodgy_files,
     get_duplicates,
     load_results,
+    OPTS,
+    PLOT_DIR,
+    RESULTS_DIR,
 )
 
-OPTS = {
-    # 'data_dir': ['./edf', './edf_sample'],
-    'patient_id': ['1110', '1869', '1876', '1904', '1965', '2002'],
-    'data_type': ['ACC', 'BVP', 'EDA', 'HR', 'TEMP', None],
-    'start_time_key': ['time_edf', 'time_fp'],
-}
-
-PLOT_DIR = './output/plots'
-RESULTS_DIR = './output/results'
 
 # EXPECTED DODGY FILES for 2002 training
 # - edf/2002/training/1611462137/Empatica-HR.edf,
@@ -37,7 +31,6 @@ def main(
     patient_id='2002',
     data_type='BVP',
     start_time_key='time_edf',
-    dropouts_and_data_stats=True,
     min_dropout=128 * 60,
 ):
     """Main entry point for the script.
@@ -58,7 +51,8 @@ def main(
         data_type: The data type to process.
         start_time_key: The key to use for the start time of labels.
         dropouts_and_data_stats: Whether to compute dropouts.
-        min_dropout: The minimum number of seconds to consider a dropout.
+        min_dropout: The minimum number of seconds to consider a dropout. -1 disables dropout
+            detection
 
     Returns:
         Dict containing the following keys:
@@ -87,33 +81,12 @@ def main(
     all_stats, all_coverage, all_dropouts = compute_stats(
         filepaths,
         apply_edf_tz=True,
-        dropouts_and_data_stats=dropouts_and_data_stats,
         start_time_key=start_time_key,
         min_dropout=min_dropout,
     )
     filestats = pd.DataFrame.from_dict(all_stats)
     coverage = pd.DataFrame.from_dict(all_coverage)
     dropouts = pd.DataFrame.from_dict(all_dropouts)
-
-
-    print("Plotting results...")
-    _fig, ax = plot_results(
-        coverage,
-        dropouts,
-        figsize=(18, 8),
-    )
-
-    if start_time_key == 'time_edf':
-        ax.set_ylabel('Hours since 00:00 of date from EDF file')
-    elif start_time_key == 'time_fp':
-        ax.set_ylabel('Hours since 00:00 of date from directory')
-
-    title_str = f'Coverage of {data_type.lower()} files for patient {patient_id}'
-    if dropouts_and_data_stats:
-        title_str += f', min dropout = {min_dropout/128} sec'
-
-    ax.set_title(title_str)
-    plt.tight_layout()
 
     print("Saving results...")
     output_filename = f'{patient_id}_coverage_{data_type.lower()}'
@@ -124,23 +97,65 @@ def main(
         'duplicate_filepaths': duplicate_filepaths,
         'coverage': coverage,
         'dropouts': dropouts,
+        'output_filename': output_filename,
+        'data_dir': data_dir,
+        'patient_id': patient_id,
+        'data_type': data_type,
+        'start_time_key': start_time_key,
+        'min_dropout': min_dropout,
     }
-    plot_filepath = Path(PLOT_DIR) / Path(output_filename + '.png')
-    results_filepath = Path(RESULTS_DIR) / Path(output_filename + '.pkl')
 
-    for fp in [plot_filepath, results_filepath]:
-        if not fp.parent.exists():
-            fp.parent.mkdir(parents=True)
+    fp = Path(RESULTS_DIR) / Path(output_filename + '.pkl')
+    if not fp.parent.exists():
+        fp.parent.mkdir(parents=True)
 
-    plt.savefig(str(plot_filepath))
-    with open(str(results_filepath), 'wb') as f:
+    with open(str(fp), 'wb') as f:
         dump(results, f)
 
     return results
 
 
 if __name__ == '__main__':
-    results = main(data_dir='./edf', patient_id='1876', data_type='TEMP')  # Test
+    data_dir = './edf'
+    patient_id = '2002'
+    data_type = 'BVP'
+
+    _results = main(data_dir=data_dir, patient_id=patient_id, data_type=data_type)  # Test
     # results = main(data_dir='./edf')  # Test
     # results = main(data_dir='/home/blake/Workspace/scratch/evalai/edf_sample')  # Test
+
+    results = load_results(patient_id, data_type)
+
+    coverage = results['coverage']
+    dropouts = results['dropouts']
+    start_time_key = results['start_time_key']
+    min_dropout = results['min_dropout']
+    output_filename = results['output_filename']
+    coverage = results['coverage']
+
+
+    print("Plotting results...")
+    _fig, ax = plot_results(
+        coverage,
+        dropouts,
+        figsize=(36, 8),
+    )
+
+    if start_time_key == 'time_edf':
+        ax.set_ylabel('Hours since 00:00 of date from EDF file')
+    elif start_time_key == 'time_fp':
+        ax.set_ylabel('Hours since 00:00 of date from directory')
+
+    title_str = f'Coverage of {data_type.lower()} files for patient {patient_id}'
+    if min_dropout >= 0:
+        title_str += f', min dropout = {min_dropout/128} sec'
+
+    ax.set_title(title_str)
+    plt.tight_layout()
+
+    fp = Path(PLOT_DIR) / Path(output_filename + '.png')
+    if not fp.parent.exists():
+        fp.parent.mkdir(parents=True)
+
+    plt.savefig(str(fp))
     plt.show()

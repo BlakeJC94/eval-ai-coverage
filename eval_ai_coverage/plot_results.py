@@ -28,6 +28,7 @@ def plot_results(
 
     # get bounds of plot
     all_bars = pd.concat([coverage, dropouts]).sort_values(by=['ax_index'])
+    # minimum_space = all_bars['ax_index'].sort_values().diff().min()
 
     start_index = all_bars['ax_index'].min()
     end_index = all_bars['ax_index'].max()
@@ -58,7 +59,7 @@ def plot_results(
             color='r',
             alpha=0.5,
             legend='DROPOUT',
-            width=width,
+            width=width*0.9,
         )
 
     # Set all x-axis guff
@@ -67,6 +68,8 @@ def plot_results(
     ax.set_xticks(ticks, labels)
     ax.tick_params(axis='x', labelrotation=-90)
     ax.set_xlabel('Data directory timestamp')
+
+    # fig.set_size_inches(figsize[0], figsize[1]/minimum_space)
 
     ax.legend()
     ax.set_xlim(x_lim)

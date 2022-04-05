@@ -5,6 +5,8 @@ from pickle import load
 
 import mne
 
+from .globals import RESULTS_DIR, OPTS
+
 
 def get_edf_filepaths(
     data_dir: str,
@@ -113,7 +115,8 @@ def get_duplicates(filepaths: List[Path]) -> List[Path]:
 
 
 def load_results(
-    results_filepath: Union[Path, str],
+    patient_id: str = '2002',
+    data_type: str = 'BVP',
 ) -> dict:
     """Loads results from a pickle file.
 
@@ -123,5 +126,19 @@ def load_results(
     Returns:
         Dictionary of results. See docs for `main` for more info.
     """
-    return load(str(results_filepath))
+    for k, v in locals().items():
+        if k in OPTS.keys():
+            assert v in OPTS[k], f"Invalid {k} = {v}"
 
+    output_filename = f'{patient_id}_coverage_{data_type.lower()}'
+    fp = Path(RESULTS_DIR) / Path(output_filename + '.pkl')
+
+    if not fp.exists():
+        print(f"No results found for {patient_id}")
+        return {}
+
+    print(f"Loading results from {fp}")
+    with open(fp, 'rb') as f:
+        results = load(f)
+
+    return results
