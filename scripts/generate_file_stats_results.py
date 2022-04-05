@@ -8,6 +8,7 @@ from eval_ai_coverage import (
     check_filepaths,
     compute_stats,
     RESULTS_DIR,
+    OPTS,
 )
 
 
@@ -70,9 +71,14 @@ def main(
 if __name__ == '__main__':
 
     # TEST
-    DATA_DIR = './edf_sample'
-    PATIENT_IDS = ['2002']
-    DATA_TYPES = ['BVP']
+    # DATA_DIR = './edf_sample'
+    # PATIENT_IDS = ['2002']
+    # DATA_TYPES = ['BVP']
+
+    # FULL SET
+    DATA_DIR = './edf'
+    PATIENT_IDS = OPTS['patient_id']
+    DATA_TYPES = OPTS['data_type']
 
     all_results = []
     for pid, dtype in product(PATIENT_IDS, DATA_TYPES):
