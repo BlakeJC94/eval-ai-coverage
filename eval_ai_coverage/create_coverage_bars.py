@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 DAY_IN_HR = 24
 
 
-def plot_coverage_bars(
+def create_coverage_bars(
     coverage: pd.DataFrame,
     dropouts: pd.DataFrame,
     figsize: Tuple[float, float] = (18, 8)
@@ -102,7 +102,7 @@ def plot_bars(
     labels = labels.sort_values(by=['ax_index'])
 
     ax_index = labels['ax_index']
-    offset = labels['label_start']  # start time (seconds)
+    offset = labels['start_time']  # start time (seconds)
     duration = labels['label_duration']  # duration (seconds)
 
     sec_in_hr = 3600

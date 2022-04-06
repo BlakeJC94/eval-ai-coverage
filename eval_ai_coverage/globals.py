@@ -4,8 +4,9 @@ OPTS = {
     'data_type': ['ACC', 'BVP', 'EDA', 'HR', 'TEMP'],
 }
 
-PLOT_DIR = './output/plots'
 RESULTS_DIR = './output/results'
+PLOT_DIR = './output/plots'
+TIMELINE_DIR = './output/plots/timeline'
 
 SPLIT = {
     '1110': '1588104564',

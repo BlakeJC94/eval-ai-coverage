@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from eval_ai_coverage import (
-    plot_coverage_bars,
+    create_coverage_bars,
     load_results,
     PLOT_DIR,
     SPLIT,
@@ -16,6 +16,7 @@ def main(
     data_type='BVP',
 ):
     """TODO"""
+    print(f"Loading results {patient_id}, {data_type}...")
     results = load_results(patient_id, data_type)
 
     coverage = results['coverage']
@@ -24,8 +25,8 @@ def main(
     output_filename = results['output_filename']
     coverage = results['coverage']
 
-    print("Plotting results...")
-    _fig, ax = plot_coverage_bars(
+    print("Plotting coverage bars...")
+    _fig, ax = create_coverage_bars(
         coverage,
         dropouts,
         figsize=(36, 8),
@@ -55,10 +56,13 @@ if __name__ == '__main__':
     PATIENT_IDS = ['2002']
     DATA_TYPES = ['BVP']
 
+    # ALL DATA
     # PATIENT_IDS = ['1110', '1869', '1876', '1904', '1965', '2002']
     # DATA_TYPES = ['ACC', 'BVP', 'EDA', 'HR', 'TEMP']
 
     for pid, dtype in product(PATIENT_IDS, DATA_TYPES):
         print(f'-------- Processing patient {pid} ({dtype})')
         main(patient_id=pid, data_type=dtype)
-        plt.show()
+
+        if len(PATIENT_IDS) == 1 and len(DATA_TYPES) == 1:
+            plt.show()

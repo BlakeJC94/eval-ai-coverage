@@ -116,6 +116,9 @@ def write_dodgy_files(
     results_filepath = results_dir / output_filename
 
     with open(str(results_filepath), 'w') as f:
-        for filepath, error in dodgy_filepaths.items():
-            f.write(f"{str(filepath)} : {error}\n")
+        if len(dodgy_filepaths) == 0:
+            f.write('No dodgy files found!')
+        else:
+            for filepath, error in dodgy_filepaths.items():
+                f.write(f'{filepath},{error}\n\n')
 
