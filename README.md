@@ -47,3 +47,7 @@ After generating stats, generate a coverage bar plot using
 $ python3 scripts/plot_coverage_bars.py
 ```
 
+After generating stats, generate a coverage timeline plot using
+```bash
+$ python3 scripts/plot_coverage_timelines.py
+```
