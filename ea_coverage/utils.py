@@ -5,13 +5,7 @@ from pickle import load
 
 import mne
 
-from .globals import RESULTS_DIR, OPTS
-
-
-def check_inputs(vars):
-    for k, v in vars:
-        if k in OPTS.keys():
-            assert v in OPTS[k], f"Invalid {k} = {v}"
+from .globals import INTERIM_PATH, PATIENT_IDS, DTYPES
 
 
 def load_results(
@@ -26,12 +20,11 @@ def load_results(
     Returns:
         Dictionary of results. See docs for `main` for more info.
     """
-    for k, v in locals().items():
-        if k in OPTS.keys():
-            assert v in OPTS[k], f"Invalid {k} = {v}"
+    assert patient_id in PATIENT_IDS, "Invalid patient_id"
+    assert data_type in DTYPES, "Invalid data_type"
 
     output_filename = f'{patient_id}_{data_type.lower()}_coverage'
-    fp = Path(RESULTS_DIR) / Path(output_filename + '.pkl')
+    fp = Path(INTERIM_PATH) / Path(output_filename + '.pkl')
 
     if not fp.exists():
         print(f"No results found for {patient_id}")

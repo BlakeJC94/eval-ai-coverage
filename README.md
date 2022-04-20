@@ -4,10 +4,11 @@ Python package to compute statistics about the eval.ai dataset.
 
 ## Usage
 
-Create a softlink to the dataset:
+Create a softlink to the raw dataset:
 
 ```bash
-$ ln -s <path-to-eval-al-data> ./edf
+$ mkdir data
+$ ln -s <path-to-eval-al-data> ./data/edf
 ```
 
 Expected file structure in `path-to-eval-al-data`:

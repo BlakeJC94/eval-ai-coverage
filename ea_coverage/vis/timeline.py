@@ -1,15 +1,13 @@
-from pathlib import Path
-from typing import List, Tuple, Optional, Dict
+from typing import Tuple, Dict
 from datetime import datetime, timedelta
 import pytz
 
 import pandas as pd
 import plotly.graph_objects as go
 
-from .globals import SPLIT
+from ea_coverage import SPLIT
 
 
-# TODO re-write this guff
 def create_coverage_timeline(
     patient_id: str,
     patient_coverage: Dict[str, Tuple[pd.DataFrame, pd.DataFrame]],
@@ -34,9 +32,8 @@ def create_coverage_timeline(
                 yref='y',
                 y=row_idx + 1.2,
                 showarrow=False,
-            )
-        )
-        traces, start_date, end_date = add_traces(
+            ))
+        traces, start_date, end_date = _add_traces(
             coverage,
             'green',
             row_idx,
@@ -44,7 +41,7 @@ def create_coverage_timeline(
             start_date,
             end_date,
         )
-        traces, start_date, end_date = add_traces(
+        traces, start_date, end_date = _add_traces(
             dropouts,
             'red',
             row_idx,
@@ -68,8 +65,7 @@ def create_coverage_timeline(
                     color='black',
                     width=1,
                 ),
-            )
-        )
+            ))
 
     # add line for train/test split
     # Q: ARE THESE DIRNAMES UTC OR LOCAL??
@@ -89,12 +85,10 @@ def create_coverage_timeline(
                 dash='dot',
                 width=2,
             ),
-        )
-    )
+        ))
 
     fig = go.Figure(
-        data=traces,
-        layout={
+        data=traces, layout={
             'height': num_dtypes * 120,
             'width': 5000,
             'showlegend': False,
@@ -111,12 +105,12 @@ def create_coverage_timeline(
             'xaxis': {
                 'range': x_range,
             }
-        }
-    )
+        })
 
     return fig
 
-def add_traces(labels, color, row_idx, traces, start_date, end_date):
+
+def _add_traces(labels, color, row_idx, traces, start_date, end_date):
     """Add traces to the Figure."""
     dt_format = '%-I:%M:%S%p %d/%m'
 
@@ -148,7 +142,6 @@ def add_traces(labels, color, row_idx, traces, start_date, end_date):
                 fill='toself',
                 hoveron='fills',
                 text=text,
-            )
-        )
+            ))
 
     return traces, start_date, end_date

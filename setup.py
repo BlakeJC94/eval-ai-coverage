@@ -1,26 +1,31 @@
-import setuptools
+"""Setup script.
 
-setuptools.setup(
-    name="eval_ai_coverage",
-    version="0.0.1",
+Install package:
+    $ pip install -e .
+
+Requirements can be updated using `pip-compile`:
+    $ pip install pip-tools
+    $ pip-compile
+"""
+
+from setuptools import setup, find_packages
+
+setup(
+    name="ea_coverage",
+    version="0.5.1",
     description='Python package for investigating coverage of Eval AI dataset',
     url="https://github.com/BlakeJC94/eval-ai-coverage",
-    author="Blake Cook",
-    classifiers=[
-        'Development Status :: Alpha',
-        'Intended Audience :: Developers',
-        'Topic :: Software Development :: Libraries',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: Implementation :: PyPy',
-    ],
+    author="BlakeJC94",
     python_requires=">=3.8",
-    packages=setuptools.find_packages(),
-    package_data={'seeralgo': ['../output/*']},
+    packages=find_packages(),
     install_requires=[
+        'fire',
+        'mne',
         'numpy',
         'pandas',
-        'mne',
         'tqdm',
     ],
+    entry_points={
+        'console_scripts': ['ea-coverage=ea_coverage.__main__:main'],
+    },
 )

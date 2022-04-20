@@ -1,4 +1,8 @@
 lightning_logs
+data/edf/*
+data/interim/*
+data/artifacts/*
+data/output/*
 
 **/*.bak
 test_results
